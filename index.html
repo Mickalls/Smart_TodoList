@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待办事项清单</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="settings">
+            <button id="themeToggle" class="theme-toggle">🌞</button>
+            <button id="langToggle" class="lang-toggle">EN</button>
+        </div>
+        <h1>待办事项清单</h1>
+        <div class="todo-input">
+            <input type="text" id="todoInput" placeholder="请输入待办事项...">
+            <select id="prioritySelect" class="priority-select">
+                <option value="low">低优先级</option>
+                <option value="medium">中优先级</option>
+                <option value="high">高优先级</option>
+            </select>
+            <select id="tagSelect" class="tag-select">
+                <option value="工作">工作</option>
+                <option value="学习">学习</option>
+                <option value="生活">生活</option>
+                <option value="其他">其他</option>
+            </select>
+            <button id="addTodo">添加</button>
+        </div>
+        <div class="todo-columns">
+            <div class="todo-column">
+                <h2>今日任务</h2>
+                <ul id="todayList" class="todo-list" data-type="today"></ul>
+            </div>
+            <div class="todo-column">
+                <h2>本周任务</h2>
+                <ul id="weekList" class="todo-list" data-type="week"></ul>
+            </div>
+            <div class="todo-column">
+                <h2>长期目标</h2>
+                <ul id="longTermList" class="todo-list" data-type="longTerm"></ul>
+            </div>
+            <div class="todo-column">
+                <h2>今日已完成任务</h2>
+                <div class="today-completed-container">
+                    <ul id="todayCompletedList" class="todo-list" data-type="todayCompleted"></ul>
+                    <button id="exportTodayCompleted" class="export-button">导出日报</button>
+                </div>
+            </div>
+            <div class="todo-column">
+                <h2>已完成任务</h2>
+                <ul id="completedList" class="todo-list" data-type="completed"></ul>
+            </div>
+        </div>
+        <div class="recycle-bin">
+            <h2>回收站</h2>
+            <ul id="recycleBinList" class="todo-list"></ul>
+            <button id="emptyRecycleBin" class="empty-recycle-bin">清空回收站</button>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
