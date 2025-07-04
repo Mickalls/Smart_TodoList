@@ -273,10 +273,6 @@ h1 {
     border-left-color: var(--priority-low);
 }
 
-.todo-item:hover {
-    transform: translateX(5px);
-}
-
 .todo-item.completed {
     background-color: var(--completed-bg);
     opacity: 0.7;
@@ -357,19 +353,6 @@ h1 {
     }
 }
 
-.delete-todo:hover {
-    background-color: var(--delete-hover);
-}
-
-.todo-tag {
-    background-color: var(--tag-bg);
-    color: var(--tag-text);
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    margin: 0 8px;
-}
-
 .stats-container {
     background-color: var(--stats-bg);
     border-radius: 8px;
@@ -405,38 +388,6 @@ h1 {
 .tag-select:focus {
     outline: none;
     border-color: var(--primary-color);
-}
-
-.tag-select {
-    padding: 0.8rem;
-    border: 2px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--input-bg);
-    color: var(--text-color);
-    font-size: 1rem;
-    cursor: pointer;
-    margin-right: 0.5rem;
-    transition: border-color 0.3s ease;
-}
-
-.tag-select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-}
-
-.todo-menu {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    cursor: pointer;
-    font-size: 1.2rem;
-    padding: 0 0.5rem;
-    opacity: 0.6;
-    transition: opacity 0.3s ease;
-}
-
-.todo-menu:hover {
-    opacity: 1;
 }
 
 .todo-context-menu {
@@ -488,66 +439,29 @@ h1 {
 .menu-item:hover::before {
     transform: scaleY(1);
 }
+
 @media (max-width: 768px) {
     .stats-container {
         padding: 0.5rem;
     }
-    
+
     .stats-item {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.25rem;
     }
-    
+
     .todo-tag {
         display: block;
         margin: 0.25rem 0;
     }
 }
 
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
 #addTodo:active {
     transform: translateY(0);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
 .restore-todo {
     background: none;
     border: none;
@@ -600,66 +514,7 @@ h1 {
     transform: translateY(0);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
-    }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
-    }
-}
 
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
 .toast {
     position: fixed;
     bottom: 20px;
@@ -679,1621 +534,218 @@ h1 {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
 }
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.restore-todo {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0;
-    transition: all 0.3s ease;
+
+/* ========================================
+   AI配置相关样式
+   ======================================== */
+
+/* AI配置按钮样式 */
+.ai-config-toggle {
     padding: 0.5rem;
-    margin-left: auto;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.todo-item:hover .restore-todo {
-    opacity: 0.6;
-}
-
-.restore-todo:hover {
-    opacity: 1 !important;
-    background-color: rgba(52, 152, 219, 0.1);
-    transform: scale(1.1);
-}
-
-.empty-recycle-bin {
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    background: linear-gradient(45deg, var(--delete-color), var(--delete-hover));
-    color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.empty-recycle-bin:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.empty-recycle-bin:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
-    }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
     background-color: var(--card-bg);
     color: var(--text-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s ease;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.ai-config-toggle:hover {
+    background-color: var(--border-color);
+}
+
+/* AI配置弹窗遮罩层 */
+.ai-config-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     z-index: 1000;
 }
 
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.restore-todo {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0;
-    transition: all 0.3s ease;
-    padding: 0.5rem;
-    margin-left: auto;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* AI配置弹窗内容区域 */
+.ai-config-content {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    animation: modalSlideIn 0.3s ease;
 }
 
-.todo-item:hover .restore-todo {
-    opacity: 0.6;
+.ai-config-content h3 {
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+    text-align: center;
 }
 
-.restore-todo:hover {
-    opacity: 1 !important;
-    background-color: rgba(52, 152, 219, 0.1);
-    transform: scale(1.1);
+/* 配置项容器 */
+.config-item {
+    margin-bottom: 1rem;
 }
 
-.empty-recycle-bin {
+.config-item label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* 配置输入框和选择框统一样式 */
+.config-select, .config-input {
     width: 100%;
     padding: 0.8rem;
-    margin-top: 1rem;
-    background: linear-gradient(45deg, var(--delete-color), var(--delete-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.empty-recycle-bin:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.empty-recycle-bin:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
-    }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
     background-color: var(--card-bg);
     color: var(--text-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
 }
 
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
+.config-select:focus, .config-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
 }
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+/* 复选框样式 */
+.config-item input[type="checkbox"] {
+    margin-right: 0.5rem;
 }
-.restore-todo {
-    background: none;
+
+/* 配置弹窗操作按钮区域 */
+.config-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+/* 保存按钮 */
+.save-btn {
+    padding: 0.8rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
     border: none;
-    color: var(--primary-color);
-    font-size: 1.2rem;
+    border-radius: 4px;
     cursor: pointer;
-    opacity: 0;
-    transition: all 0.3s ease;
-    padding: 0.5rem;
-    margin-left: auto;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.save-btn:hover {
+    background-color: var(--primary-hover);
+}
+
+/* 取消按钮 */
+.cancel-btn {
+    padding: 0.8rem 1.5rem;
+    background-color: var(--border-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover {
+    background-color: var(--delete-color);
+    color: white;
+}
+
+/* 弹窗滑入动画 */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   AI建议区域样式
+   ======================================== */
+
+/* AI建议容器 */
+.ai-suggestion {
+    background-color: var(--card-bg);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    animation: slideInDown 0.3s ease;
+}
+
+/* AI建议内容布局 */
+.ai-suggestion-content {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 1rem;
 }
 
-.todo-item:hover .restore-todo {
-    opacity: 0.6;
-}
-
-.restore-todo:hover {
-    opacity: 1 !important;
-    background-color: rgba(52, 152, 219, 0.1);
-    transform: scale(1.1);
-}
-
-.empty-recycle-bin {
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    background: linear-gradient(45deg, var(--delete-color), var(--delete-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.empty-recycle-bin:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.empty-recycle-bin:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
-    }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
-    background-color: var(--card-bg);
+/* AI建议提示文本 */
+.ai-suggestion-text {
     color: var(--text-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
+    font-weight: 500;
 }
 
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
+/* AI建议标签容器 */
+.ai-suggestion-tags {
+    display: flex;
+    gap: 0.5rem;
 }
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+/* AI建议标签按钮 */
+.ai-suggestion-tag {
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
 }
-.restore-todo {
+
+.ai-suggestion-tag:hover {
+    background-color: var(--primary-hover);
+}
+
+/* AI建议忽略按钮 */
+.ai-suggestion-dismiss {
     background: none;
     border: none;
-    color: var(--primary-color);
+    color: var(--delete-color);
+    cursor: pointer;
     font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0;
-    transition: all 0.3s ease;
-    padding: 0.5rem;
     margin-left: auto;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.todo-item:hover .restore-todo {
-    opacity: 0.6;
-}
-
-.restore-todo:hover {
-    opacity: 1 !important;
-    background-color: rgba(52, 152, 219, 0.1);
-    transform: scale(1.1);
-}
-
-.empty-recycle-bin {
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    background: linear-gradient(45deg, var(--delete-color), var(--delete-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.empty-recycle-bin:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.empty-recycle-bin:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
-    }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.restore-todo {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0;
-    transition: all 0.3s ease;
     padding: 0.5rem;
-    margin-left: auto;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    transition: background-color 0.3s ease;
 }
 
-.todo-item:hover .restore-todo {
-    opacity: 0.6;
+.ai-suggestion-dismiss:hover {
+    background-color: rgba(231, 76, 60, 0.1);
 }
 
-.restore-todo:hover {
-    opacity: 1 !important;
-    background-color: rgba(52, 152, 219, 0.1);
-    transform: scale(1.1);
-}
-
-.empty-recycle-bin {
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    background: linear-gradient(45deg, var(--delete-color), var(--delete-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.empty-recycle-bin:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.empty-recycle-bin:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
+/* AI建议滑入动画 */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
     }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
-
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.restore-todo {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0;
-    transition: all 0.3s ease;
-    padding: 0.5rem;
-    margin-left: auto;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.todo-item:hover .restore-todo {
-    opacity: 0.6;
-}
-
-.restore-todo:hover {
-    opacity: 1 !important;
-    background-color: rgba(52, 152, 219, 0.1);
-    transform: scale(1.1);
-}
-
-.empty-recycle-bin {
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    background: linear-gradient(45deg, var(--delete-color), var(--delete-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.empty-recycle-bin:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.empty-recycle-bin:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
-    }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.restore-todo {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0;
-    transition: all 0.3s ease;
-    padding: 0.5rem;
-    margin-left: auto;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.todo-item:hover .restore-todo {
-    opacity: 0.6;
-}
-
-.restore-todo:hover {
-    opacity: 1 !important;
-    background-color: rgba(52, 152, 219, 0.1);
-    transform: scale(1.1);
-}
-
-.empty-recycle-bin {
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    background: linear-gradient(45deg, var(--delete-color), var(--delete-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.empty-recycle-bin:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.empty-recycle-bin:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
-    }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.restore-todo {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0;
-    transition: all 0.3s ease;
-    padding: 0.5rem;
-    margin-left: auto;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.todo-item:hover .restore-todo {
-    opacity: 0.6;
-}
-
-.restore-todo:hover {
-    opacity: 1 !important;
-    background-color: rgba(52, 152, 219, 0.1);
-    transform: scale(1.1);
-}
-
-.empty-recycle-bin {
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    background: linear-gradient(45deg, var(--delete-color), var(--delete-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.empty-recycle-bin:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.empty-recycle-bin:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
-    }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.restore-todo {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0;
-    transition: all 0.3s ease;
-    padding: 0.5rem;
-    margin-left: auto;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.todo-item:hover .restore-todo {
-    opacity: 0.6;
-}
-
-.restore-todo:hover {
-    opacity: 1 !important;
-    background-color: rgba(52, 152, 219, 0.1);
-    transform: scale(1.1);
-}
-
-.empty-recycle-bin {
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    background: linear-gradient(45deg, var(--delete-color), var(--delete-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.empty-recycle-bin:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.empty-recycle-bin:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
-    }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.restore-todo {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0;
-    transition: all 0.3s ease;
-    padding: 0.5rem;
-    margin-left: auto;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.todo-item:hover .restore-todo {
-    opacity: 0.6;
-}
-
-.restore-todo:hover {
-    opacity: 1 !important;
-    background-color: rgba(52, 152, 219, 0.1);
-    transform: scale(1.1);
-}
-
-.empty-recycle-bin {
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    background: linear-gradient(45deg, var(--delete-color), var(--delete-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.empty-recycle-bin:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.empty-recycle-bin:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
-    }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.restore-todo {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0;
-    transition: all 0.3s ease;
-    padding: 0.5rem;
-    margin-left: auto;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.todo-item:hover .restore-todo {
-    opacity: 0.6;
-}
-
-.restore-todo:hover {
-    opacity: 1 !important;
-    background-color: rgba(52, 152, 219, 0.1);
-    transform: scale(1.1);
-}
-
-.empty-recycle-bin {
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    background: linear-gradient(45deg, var(--delete-color), var(--delete-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.empty-recycle-bin:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.empty-recycle-bin:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
-    }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.restore-todo {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0;
-    transition: all 0.3s ease;
-    padding: 0.5rem;
-    margin-left: auto;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.todo-item:hover .restore-todo {
-    opacity: 0.6;
-}
-
-.restore-todo:hover {
-    opacity: 1 !important;
-    background-color: rgba(52, 152, 219, 0.1);
-    transform: scale(1.1);
-}
-
-.empty-recycle-bin {
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    background: linear-gradient(45deg, var(--delete-color), var(--delete-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.empty-recycle-bin:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.empty-recycle-bin:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-@media (max-width: 768px) {
-    .stats-container {
-        padding: 0.5rem;
-    }
-    
-    .stats-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .todo-tag {
-        display: block;
-        margin: 0.25rem 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        margin: 1rem;
-        padding: 0.5rem;
-    }
-
-    .todo-columns {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .todo-input {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    #addTodo {
-        width: 100%;
-    }
-}
-
-#addTodo {
-    padding: 0.8rem 1.8rem;
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#addTodo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-#addTodo:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.toast.show {
-    transform: translateX(-50%)

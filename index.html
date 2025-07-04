@@ -8,11 +8,76 @@
 </head>
 <body>
     <div class="container">
+        <!-- 顶部设置栏：主题切换、语言切换、AI配置 -->
         <div class="settings">
             <button id="themeToggle" class="theme-toggle">🌞</button>
             <button id="langToggle" class="lang-toggle">EN</button>
+            <!-- AI配置入口按钮 -->
+            <button id="aiConfigToggle" class="ai-config-toggle">🤖</button>
         </div>
+        
+        <!-- AI配置弹窗 - 用户可以配置AI提供商、API密钥等 -->
+        <div id="aiConfigModal" class="ai-config-modal" style="display: none;">
+            <div class="ai-config-content">
+                <h3>🤖 AI助手配置</h3>
+                
+                <!-- AI提供商选择 -->
+                <div class="config-item">
+                    <label for="aiProvider">AI提供商:</label>
+                    <select id="aiProvider" class="config-select">
+                        <option value="deepseek">DeepSeek (推荐)</option>
+                        <option value="openai">OpenAI</option>
+                        <option value="claude">Claude</option>
+                        <option value="custom">自定义</option>
+                    </select>
+                </div>
+                
+                <!-- AI模型选择 -->
+                <div class="config-item">
+                    <label for="aiModel">模型选择:</label>
+                    <select id="aiModel" class="config-select">
+                        <option value="deepseek-chat">deepseek-chat</option>
+                        <option value="deepseek-coder">deepseek-coder</option>
+                    </select>
+                </div>
+                
+                <!-- API地址配置 -->
+                <div class="config-item">
+                    <label for="aiBaseUrl">API地址:</label>
+                    <input type="text" id="aiBaseUrl" class="config-input" placeholder="https://api.deepseek.com" />
+                </div>
+                
+                <!-- API密钥配置 -->
+                <div class="config-item">
+                    <label for="aiApiKey">API密钥:</label>
+                    <input type="password" id="aiApiKey" class="config-input" placeholder="sk-xxx..." />
+                </div>
+                
+                <!-- 功能开关 -->
+                <div class="config-item">
+                    <label>
+                        <input type="checkbox" id="aiEnabled" checked /> 启用AI功能
+                    </label>
+                </div>
+                
+                <!-- 记住选择选项 -->
+                <div class="config-item">
+                    <label>
+                        <input type="checkbox" id="aiRememberChoice" checked /> 记住我的选择
+                    </label>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div class="config-actions">
+                    <button id="saveAiConfig" class="save-btn">保存配置</button>
+                    <button id="closeAiConfig" class="cancel-btn">取消</button>
+                </div>
+            </div>
+        </div>
+        
         <h1>待办事项清单</h1>
+        
+        <!-- 主要输入区域 -->
         <div class="todo-input">
             <input type="text" id="todoInput" placeholder="请输入待办事项...">
             <select id="prioritySelect" class="priority-select">
@@ -20,14 +85,31 @@
                 <option value="medium">中优先级</option>
                 <option value="high">高优先级</option>
             </select>
+            
+            <!-- 标签选择 - 包含AI智能分类选项 -->
             <select id="tagSelect" class="tag-select">
                 <option value="工作">工作</option>
                 <option value="学习">学习</option>
                 <option value="生活">生活</option>
                 <option value="其他">其他</option>
+                <option value="ai-classify">🤖 智能分类</option>
             </select>
+            
             <button id="addTodo">添加</button>
         </div>
+        
+        <!-- AI建议区域 - 当用户选择智能分类时显示AI推荐的分类 -->
+        <div id="aiSuggestion" class="ai-suggestion" style="display: none;">
+            <div class="ai-suggestion-content">
+                <span class="ai-suggestion-text">🤖 AI建议: </span>
+                <!-- AI推荐的分类标签会动态添加到这里 -->
+                <div class="ai-suggestion-tags" id="aiSuggestionTags"></div>
+                <!-- 忽略建议按钮 -->
+                <button class="ai-suggestion-dismiss" id="dismissAiSuggestion">× 忽略建议</button>
+            </div>
+        </div>
+        
+        <!-- 任务列表区域 - 五列布局 -->
         <div class="todo-columns">
             <div class="todo-column">
                 <h2>今日任务</h2>
@@ -53,12 +135,16 @@
                 <ul id="completedList" class="todo-list" data-type="completed"></ul>
             </div>
         </div>
+        
+        <!-- 回收站区域 -->
         <div class="recycle-bin">
             <h2>回收站</h2>
             <ul id="recycleBinList" class="todo-list"></ul>
             <button id="emptyRecycleBin" class="empty-recycle-bin">清空回收站</button>
         </div>
     </div>
+    
+    <!-- 主要JavaScript逻辑 -->
     <script src="app.js"></script>
 </body>
 </html>
