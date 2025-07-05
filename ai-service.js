@@ -28,7 +28,10 @@ class AIConfigManager {
             enabled: true, // 默认启用AI
             rememberChoice: true, // 默认记住选择
             features: {
-                autoClassification: true  // 自动分类功能开关
+                autoClassification: true,       // 自动分类功能开关
+                textOptimization: true,         // 文本优化功能开关
+                smartScheduling: true,          // 智能规划功能开关
+                naturalLanguageInput: true      // 自然语言输入功能开关
             },
             apiConfig: {
                 provider: 'deepseek',           // AI提供商
@@ -40,7 +43,20 @@ class AIConfigManager {
         
         const savedConfig = localStorage.getItem('aiConfig');
         if (savedConfig) {
-            return { ...defaultConfig, ...JSON.parse(savedConfig) };
+            const parsed = JSON.parse(savedConfig);
+            // 深度合并配置，确保features对象被正确合并
+            return {
+                ...defaultConfig,
+                ...parsed,
+                features: {
+                    ...defaultConfig.features,
+                    ...parsed.features
+                },
+                apiConfig: {
+                    ...defaultConfig.apiConfig,
+                    ...parsed.apiConfig
+                }
+            };
         }
         return defaultConfig;
     }
@@ -473,6 +489,127 @@ ${tasks.map((task, index) =>
             };
         }
     }
+
+    // 自然语言解析功能
+    async parseNaturalLanguage(text, context = {}) {
+        if (!this.config.enabled) {
+            throw new Error('AI功能未启用');
+        }
+
+        if (!this.config.apiConfig?.apiKey) {
+            throw new Error('API密钥未配置');
+        }
+
+        const prompt = this.buildNLPPrompt(text, context);
+        const response = await this.client.request('/v1/chat/completions', {
+            model: this.client.model,
+            messages: [{ role: 'user', content: prompt }],
+            max_tokens: 500,
+            temperature: 0.7
+        });
+        
+        if (!response || !response.choices || !response.choices[0]?.message?.content) {
+            throw new Error('AI解析响应为空');
+        }
+
+        return this.parseNLPResponse(response.choices[0].message.content, text);
+    }
+
+    // 构建NLP解析提示词
+    buildNLPPrompt(text, context) {
+        const categories = (context.language === 'en') ? 
+            ['Work', 'Study', 'Life', 'Other'] : 
+            ['工作', '学习', '生活', '其他'];
+        
+        const categoryString = categories.join('/');
+        const currentDate = new Date();
+        const tomorrow = new Date(currentDate);
+        tomorrow.setDate(currentDate.getDate() + 1);
+
+        return `请分析用户输入"${text}"，提取关键信息并优化任务描述，返回JSON：
+
+{
+  "text": "优化后的任务描述（去掉时间信息，专注于要做什么）",
+  "priority": "根据紧急程度判断：high/medium/low",
+  "tag": "从${categoryString}中选择最合适的分类",
+  "dueDate": "如果提及时间则转为ISO格式，今天是${currentDate.toISOString().split('T')[0]}，明天是${tomorrow.toISOString().split('T')[0]}",
+  "estimatedDuration": "预估完成时长（分钟）"
+}
+
+例如："明天下午3点提醒我开会"应解析为：
+{
+  "text": "参加会议",
+  "priority": "medium", 
+  "tag": "工作",
+  "dueDate": "${tomorrow.toISOString().split('T')[0]}T15:00:00.000Z",
+  "estimatedDuration": 60
+}
+
+只返回JSON，不要其他文字。`;
+    }
+
+    // 解析NLP响应
+    parseNLPResponse(content, originalText) {
+        try {
+            // 清理响应内容，去掉可能的markdown格式
+            let cleanContent = content.trim();
+            if (cleanContent.startsWith('```json')) {
+                cleanContent = cleanContent.replace(/```json\s*|\s*```/g, '');
+            } else if (cleanContent.startsWith('```')) {
+                cleanContent = cleanContent.replace(/```\s*|\s*```/g, '');
+            }
+
+            const parsed = JSON.parse(cleanContent);
+            
+            // 验证必要字段
+            if (!parsed.text) {
+                parsed.text = originalText;
+            }
+            
+            // 设置默认值
+            parsed.priority = parsed.priority || 'medium';
+            parsed.tag = parsed.tag || '其他';
+            parsed.dueDate = parsed.dueDate || null;
+            parsed.estimatedDuration = parsed.estimatedDuration || null;
+
+            // 验证优先级值
+            if (!['high', 'medium', 'low'].includes(parsed.priority)) {
+                parsed.priority = 'medium';
+            }
+
+            // 验证分类值 - 支持中英文
+            const validTagsZh = ['工作', '学习', '生活', '其他'];
+            const validTagsEn = ['Work', 'Study', 'Life', 'Other'];
+            const allValidTags = [...validTagsZh, ...validTagsEn];
+            
+            if (!allValidTags.includes(parsed.tag)) {
+                // 如果分类不在有效列表中，设置为默认值
+                parsed.tag = '其他';
+            }
+
+            return {
+                success: true,
+                data: parsed,
+                originalInput: originalText
+            };
+        } catch (error) {
+            console.error('NLP响应解析失败:', error);
+            
+            // 如果解析失败，返回基本的结果
+            return {
+                success: false,
+                error: error.message,
+                data: {
+                    text: originalText,
+                    priority: 'medium',
+                    tag: '其他',
+                    dueDate: null,
+                    estimatedDuration: null
+                },
+                originalInput: originalText
+            };
+        }
+    }
 }
 
 // ================================
@@ -569,6 +706,72 @@ async function getAISmartSchedule(tasks, preferences = {}) {
         return result;
     } catch (error) {
         console.error('AI智能规划失败:', error);
+        return null;
+    }
+}
+
+/**
+ * 获取AI自然语言解析
+ * 调用AI服务解析自然语言输入，提取结构化任务信息
+ * @param {string} text - 用户的自然语言输入
+ * @param {Object} context - 上下文信息
+ * @returns {Promise<Object|null>} 解析结果，失败时返回null
+ */
+async function getAINaturalLanguageParsing(text, context = {}) {
+    try {
+        console.log('=== 开始AI自然语言解析 ===');
+        console.log('输入文本:', text);
+        console.log('上下文:', context);
+        
+        // 检查AI功能是否启用
+        const config = AIConfigManager.getConfig();
+        console.log('AI配置:', config);
+        
+        if (!config.enabled) {
+            console.log('AI功能未启用');
+            return null;
+        }
+
+        // 检查API配置
+        if (!config.apiConfig?.apiKey) {
+            console.log('API密钥未配置');
+            return null;
+        }
+
+        console.log('✅ 配置检查通过');
+
+        console.log('⚡ 直接调用AI服务解析（无缓存）');
+        
+        // 直接调用AI服务解析，不使用缓存
+        const aiService = new AIService();
+        console.log('AIService实例创建成功');
+        
+        const contextWithLanguage = {
+            ...context,
+            language: window.currentLang || 'zh'
+        };
+        console.log('完整上下文:', contextWithLanguage);
+        
+        const result = await aiService.parseNaturalLanguage(text, contextWithLanguage);
+        console.log('AI服务解析结果:', result);
+        
+        if (!result) {
+            console.error('AI服务返回null结果');
+            return null;
+        }
+        
+        console.log('=== AI自然语言解析完成 ===');
+        return result;
+    } catch (error) {
+        console.error('=== AI自然语言解析失败 ===');
+        console.error('错误类型:', error.constructor.name);
+        console.error('错误信息:', error.message);
+        console.error('完整错误:', error);
+        console.error('错误详情:', {
+            message: error.message,
+            stack: error.stack,
+            config: AIConfigManager.getConfig()
+        });
         return null;
     }
 }
@@ -1367,12 +1570,19 @@ function saveAIConfig() {
         return;
     }
     
-    // 创建新配置
+    // 获取当前配置以保留现有的features设置
+    const currentConfig = AIConfigManager.getConfig();
+    
+    // 创建新配置，保留完整的features配置
     const config = {
         enabled,
         rememberChoice,
         features: {
-            autoClassification: true
+            autoClassification: true,
+            textOptimization: true,
+            smartScheduling: true,
+            naturalLanguageInput: true,
+            ...currentConfig.features  // 保留现有配置
         },
         apiConfig: {
             provider,
@@ -1387,6 +1597,11 @@ function saveAIConfig() {
     
     // 重新渲染标签选择框以反映AI状态变化
     renderTagSelect();
+    
+    // 刷新当前输入模式状态，确保界面元素显示正确
+    if (typeof switchInputMode === 'function' && typeof currentInputMode !== 'undefined') {
+        switchInputMode(currentInputMode);
+    }
     
     // 显示成功提示
     const saveBtn = document.getElementById('saveAiConfig');
@@ -1853,4 +2068,342 @@ function removeTaskFromSchedule(taskIndex) {
         
         showToast(currentLang === 'zh' ? '✅ 已移除时间安排' : '✅ Removed from schedule');
     }
+}
+
+// ================================
+// 自然语言解析相关UI函数
+// ================================
+
+/**
+ * 显示自然语言解析确认弹窗
+ * @param {Object} parseResult - AI解析结果
+ */
+function showNLPConfirmModal(parseResult) {
+    const modal = document.getElementById('nlpConfirmModal');
+    const originalText = document.getElementById('nlpOriginalText');
+    const taskText = document.getElementById('nlpTaskText');
+    const priority = document.getElementById('nlpPriority');
+    const category = document.getElementById('nlpCategory');
+    
+    // 填充原始输入
+    originalText.textContent = parseResult.originalInput;
+    
+    // 填充解析结果
+    taskText.value = parseResult.data.text;
+    priority.value = parseResult.data.priority;
+    category.value = parseResult.data.tag;
+    
+    // 显示弹窗
+    modal.style.display = 'flex';
+    
+    // 保存解析结果到全局变量以便后续使用
+    window.currentNLPResult = parseResult;
+}
+
+/**
+ * 隐藏自然语言解析确认弹窗
+ */
+function hideNLPConfirmModal() {
+    const modal = document.getElementById('nlpConfirmModal');
+    modal.style.display = 'none';
+    window.currentNLPResult = null;
+}
+
+/**
+ * 确认添加自然语言解析的任务
+ */
+function confirmNLPTask() {
+    const taskText = document.getElementById('nlpTaskText').value.trim();
+    const priority = document.getElementById('nlpPriority').value;
+    const category = document.getElementById('nlpCategory').value;
+    
+    if (!taskText) {
+        showToast(currentLang === 'zh' ? '❌ 请填写任务内容' : '❌ Please enter task content');
+        return;
+    }
+    
+    // 构建任务数据
+    const taskData = {
+        text: taskText,
+        priority: priority,
+        tag: category,
+        dueDate: window.currentNLPResult?.data?.dueDate || new Date().toISOString(),
+        aiEnhanced: {
+            naturalLanguageInput: window.currentNLPResult?.originalInput,
+            aiParsedResult: window.currentNLPResult?.data
+        }
+    };
+    
+    // 添加任务到列表
+    const newTodo = {
+        id: Date.now().toString(),
+        ...taskData,
+        completed: false,
+        createdAt: new Date().toISOString()
+    };
+    
+    todos.push(newTodo);
+    localStorage.setItem('todos', JSON.stringify(todos));
+    
+    // 更新AI使用统计
+    const stats = JSON.parse(localStorage.getItem('aiUsageStats') || '{}');
+    stats.totalNLPParsing = (stats.totalNLPParsing || 0) + 1;
+    localStorage.setItem('aiUsageStats', JSON.stringify(stats));
+    
+    // 重新渲染任务列表
+    renderTodos();
+    
+    // 隐藏弹窗并重置输入
+    hideNLPConfirmModal();
+    document.getElementById('todoInput').value = '';
+    
+    showToast(currentLang === 'zh' ? '✅ 任务添加成功' : '✅ Task added successfully');
+}
+
+/**
+ * 编辑自然语言解析结果
+ */
+function editNLPTask() {
+    // 编辑模式下，用户可以直接修改弹窗中的字段
+    // 这里可以添加一些UI状态变化，比如高亮编辑字段
+    const taskText = document.getElementById('nlpTaskText');
+    taskText.focus();
+    taskText.select();
+    
+    showToast(currentLang === 'zh' ? '💡 请修改任务信息后点击确认' : '💡 Please modify task info and confirm');
+}
+
+/**
+ * 重新输入自然语言
+ */
+function retryNLPInput() {
+    hideNLPConfirmModal();
+    
+    // 清空输入框并聚焦
+    const input = document.getElementById('todoInput');
+    input.value = '';
+    input.focus();
+    
+    showToast(currentLang === 'zh' ? '💡 请重新输入您的任务描述' : '💡 Please re-enter your task description');
+}
+
+/**
+ * 处理自然语言输入
+ * @param {string} text - 用户输入的自然语言
+ */
+async function handleNaturalLanguageInput(text) {
+    if (!text.trim()) {
+        return;
+    }
+    
+    try {
+        // 显示加载状态
+        const addButton = document.getElementById('addTodo');
+        if (!addButton) {
+            throw new Error('找不到添加按钮');
+        }
+        
+        // 安全地获取和保存原始文本
+        const originalText = typeof addButton.textContent === 'string' ? 
+            addButton.textContent : 
+            (currentLang === 'zh' ? '🤖 AI解析' : '🤖 AI Parse');
+        
+        addButton.textContent = currentLang === 'zh' ? '🤖 AI解析中...' : '🤖 AI Parsing...';
+        addButton.disabled = true;
+        
+        // 调用AI解析
+        const parseResult = await getAINaturalLanguageParsing(text);
+        
+        if (parseResult) {
+            // 显示解析确认弹窗
+            showNLPConfirmModal(parseResult);
+        } else {
+            // 解析失败，提示用户切换到结构化模式
+            console.log('AI解析返回null，检查AI配置...');
+            const aiConfig = AIConfigManager.getConfig();
+            console.log('AI配置状态:', aiConfig);
+            
+            showToast(currentLang === 'zh' ? 
+                '❌ AI解析失败，请检查AI配置或切换到结构化模式' : 
+                '❌ AI parsing failed, please check AI config or switch to structured mode');
+        }
+        
+    } catch (error) {
+        console.error('自然语言处理失败:', error);
+        showToast(currentLang === 'zh' ? '❌ 处理失败，请稍后重试' : '❌ Processing failed, please try again');
+    } finally {
+        // 恢复按钮状态
+        const addButton = document.getElementById('addTodo');
+        if (addButton) {
+            // 安全地恢复按钮文本
+            addButton.textContent = currentLang === 'zh' ? '🤖 AI解析' : '🤖 AI Parse';
+            addButton.disabled = false;
+        }
+    }
+}
+
+/**
+ * 设置自然语言解析事件监听器
+ */
+function setupNLPEventListeners() {
+    // 确认添加按钮
+    document.getElementById('confirmNlpTask')?.addEventListener('click', confirmNLPTask);
+    
+    // 编辑按钮
+    document.getElementById('editNlpTask')?.addEventListener('click', editNLPTask);
+    
+    // 重新输入按钮
+    document.getElementById('retryNlpInput')?.addEventListener('click', retryNLPInput);
+    
+    // 点击弹窗外部关闭
+    document.getElementById('nlpConfirmModal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideNLPConfirmModal();
+        }
+    });
 } 
+
+// ================================
+// 🚨 紧急修复：解决AI功能无法使用的问题
+// ================================
+
+/**
+ * 🚨 紧急修复函数：强制重新设置所有AI事件监听器
+ * 解决用户报告的AI功能无法使用问题
+ */
+function forceFixAIEventListeners() {
+    console.log('🚨 开始强制修复AI事件监听器...');
+    
+    // 1. 强制修复AI配置按钮
+    const aiConfigBtn = document.getElementById('aiConfigToggle');
+    if (aiConfigBtn) {
+        // 完全清除现有事件监听器
+        const newBtn = aiConfigBtn.cloneNode(true);
+        aiConfigBtn.parentNode.replaceChild(newBtn, aiConfigBtn);
+        
+        newBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('🤖 AI配置按钮被点击');
+            showAIConfigModal();
+        });
+        
+        // 强制设置按钮样式，确保可点击
+        newBtn.style.pointerEvents = 'auto';
+        newBtn.style.cursor = 'pointer';
+        
+        console.log('✅ AI配置按钮已强制修复');
+    } else {
+        console.error('❌ AI配置按钮未找到');
+    }
+    
+    // 2. 强制修复NLP弹窗按钮
+    const nlpButtons = [
+        { id: 'confirmNlpTask', handler: confirmNLPTask, name: '确认添加' },
+        { id: 'editNlpTask', handler: editNLPTask, name: '修改' },
+        { id: 'retryNlpInput', handler: retryNLPInput, name: '重新输入' }
+    ];
+    
+    nlpButtons.forEach(({ id, handler, name }) => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            
+            newBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log(`🎯 ${name} 按钮被点击`);
+                handler();
+            });
+            
+            // 强制设置按钮样式
+            newBtn.style.pointerEvents = 'auto';
+            newBtn.style.cursor = 'pointer';
+            
+            console.log(`✅ ${name} 按钮已强制修复`);
+        } else {
+            console.error(`❌ ${name} 按钮未找到`);
+        }
+    });
+    
+    // 3. 强制修复优化按钮
+    const optimizeBtn = document.getElementById('optimizeBtn');
+    if (optimizeBtn) {
+        const newBtn = optimizeBtn.cloneNode(true);
+        optimizeBtn.parentNode.replaceChild(newBtn, optimizeBtn);
+        
+        newBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('✨ 优化按钮被点击');
+            handleOptimizeClick();
+        });
+        
+        newBtn.style.pointerEvents = 'auto';
+        newBtn.style.cursor = 'pointer';
+        
+        console.log('✅ 优化按钮已强制修复');
+    }
+    
+    // 4. 强制修复智能规划按钮
+    const smartPlanBtn = document.getElementById('smartPlanToggle');
+    if (smartPlanBtn) {
+        const newBtn = smartPlanBtn.cloneNode(true);
+        smartPlanBtn.parentNode.replaceChild(newBtn, smartPlanBtn);
+        
+        newBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('🧠 智能规划按钮被点击');
+            showSmartPlanPanel();
+        });
+        
+        newBtn.style.pointerEvents = 'auto';
+        newBtn.style.cursor = 'pointer';
+        
+        console.log('✅ 智能规划按钮已强制修复');
+    }
+    
+    // 5. 强制修复AI保存配置按钮
+    const saveConfigBtn = document.getElementById('saveAiConfig');
+    if (saveConfigBtn) {
+        const newBtn = saveConfigBtn.cloneNode(true);
+        saveConfigBtn.parentNode.replaceChild(newBtn, saveConfigBtn);
+        
+        newBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('💾 保存AI配置按钮被点击');
+            saveAIConfig();
+        });
+        
+        newBtn.style.pointerEvents = 'auto';
+        newBtn.style.cursor = 'pointer';
+        
+        console.log('✅ 保存AI配置按钮已强制修复');
+    }
+    
+    // 6. 强制修复关闭AI配置按钮
+    const closeConfigBtn = document.getElementById('closeAiConfig');
+    if (closeConfigBtn) {
+        const newBtn = closeConfigBtn.cloneNode(true);
+        closeConfigBtn.parentNode.replaceChild(newBtn, closeConfigBtn);
+        
+        newBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('❌ 关闭AI配置按钮被点击');
+            hideAIConfigModal();
+        });
+        
+        newBtn.style.pointerEvents = 'auto';
+        newBtn.style.cursor = 'pointer';
+        
+        console.log('✅ 关闭AI配置按钮已强制修复');
+    }
+    
+    console.log('🚀 AI事件监听器强制修复完成！');
+}
+
+// 🚨 页面加载后立即运行强制修复
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(forceFixAIEventListeners, 800);
+});
+
+// 🚨 暴露到全局作用域，供调试使用
+window.forceFixAIEventListeners = forceFixAIEventListeners;

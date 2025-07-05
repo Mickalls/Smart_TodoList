@@ -119,12 +119,35 @@
         
         <!-- 主要输入区域 -->
         <div class="todo-input">
+            <!-- 输入模式切换 -->
+            <div class="input-mode-tabs">
+                <button id="structuredModeBtn" class="mode-tab active" data-mode="structured">
+                    <span class="mode-icon">📝</span>
+                    <span data-i18n="inputMode.structured">结构化</span>
+                </button>
+                <button id="naturalModeBtn" class="mode-tab" data-mode="natural">
+                    <span class="mode-icon">💬</span>
+                    <span data-i18n="inputMode.natural">聊天模式</span>
+                </button>
+            </div>
+            
             <div class="input-with-optimize">
                 <input type="text" id="todoInput" placeholder="请输入待办事项...">
                 <button id="optimizeBtn" class="optimize-btn" title="AI优化任务描述">
                     <span class="optimize-icon">✨</span>
                     <span class="optimize-text">优化</span>
                 </button>
+            </div>
+            
+            <!-- 聊天模式帮助提示 -->
+            <div class="help-area" id="naturalModeHelp">
+                <p data-i18n="nlp.helpText">💡 试试这些例子：</p>
+                <div class="help-examples">
+                    <span class="help-example">"明天下午3点提醒我开会"</span>
+                    <span class="help-example">"高优先级：完成项目报告"</span>
+                    <span class="help-example">"下周五前学习新技术"</span>
+                    <span class="help-example">"买菜做饭，预计1小时"</span>
+                </div>
             </div>
             <select id="prioritySelect" class="priority-select">
                 <option value="low">低优先级</option>
@@ -267,6 +290,57 @@
                     <div class="unscheduled-task-list" id="unscheduledTasks">
                         <!-- 未规划的任务将显示在这里 -->
                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 自然语言解析确认弹窗 -->
+        <div id="nlpConfirmModal" class="nlp-confirm-modal" style="display: none;">
+            <div class="nlp-confirm-content">
+                <h3 data-i18n="nlp.title">🤖 AI理解了您的意思</h3>
+                
+                <div class="nlp-original-input">
+                    <h4 data-i18n="nlp.originalInput">您的输入：</h4>
+                    <div class="nlp-input-text" id="nlpOriginalText"></div>
+                </div>
+                
+                <div class="nlp-parsed-result">
+                    <h4 data-i18n="nlp.parsedResult">AI解析结果：</h4>
+                    <div class="nlp-fields">
+                        <div class="nlp-field">
+                            <label data-i18n="nlp.taskContent">任务内容：</label>
+                            <input type="text" id="nlpTaskText" class="nlp-input">
+                        </div>
+                        <div class="nlp-field">
+                            <label data-i18n="nlp.priority">优先级：</label>
+                            <select id="nlpPriority" class="nlp-select">
+                                <option value="low" data-i18n="priority.low">低优先级</option>
+                                <option value="medium" data-i18n="priority.medium">中优先级</option>
+                                <option value="high" data-i18n="priority.high">高优先级</option>
+                            </select>
+                        </div>
+                        <div class="nlp-field">
+                            <label data-i18n="nlp.category">分类：</label>
+                            <select id="nlpCategory" class="nlp-select">
+                                <!-- 分类选项将通过JavaScript动态设置 -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nlp-actions">
+                    <button id="confirmNlpTask" class="nlp-btn confirm-btn">
+                        <span class="btn-icon">✅</span>
+                        <span data-i18n="nlp.confirm">确认添加</span>
+                    </button>
+                    <button id="editNlpTask" class="nlp-btn edit-btn">
+                        <span class="btn-icon">✏️</span>
+                        <span data-i18n="nlp.modify">修改</span>
+                    </button>
+                    <button id="retryNlpInput" class="nlp-btn retry-btn">
+                        <span class="btn-icon">🔄</span>
+                        <span data-i18n="nlp.retry">重新输入</span>
+                    </button>
                 </div>
             </div>
         </div>

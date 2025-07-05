@@ -217,15 +217,6 @@ function exportDailyReport(event) {
     }
 }
 
-// 添加导出按钮事件监听
-document.addEventListener('DOMContentLoaded', () => {
-    const exportButton = document.getElementById('exportTodayCompleted');
-    if (exportButton) {
-        exportButton.addEventListener('click', exportDailyReport);
-        exportButton.addEventListener('contextmenu', exportDailyReport);
-    }
-});
-
 // 任务提醒功能
 function requestNotificationPermission() {
     if ('Notification' in window) {
@@ -260,13 +251,6 @@ function showNotification(todo) {
     }
 }
 
-// 初始化时请求通知权限
-document.addEventListener('DOMContentLoaded', () => {
-    requestNotificationPermission();
-    // 每分钟检查一次到期任务
-    setInterval(checkDueTasks, 60000);
-});
-
 // ================================
 // 全局变量和数据结构
 // ================================
@@ -274,6 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // 从localStorage获取用户偏好设置
 let currentLang = localStorage.getItem('lang') || 'zh';
 let isDarkTheme = localStorage.getItem('darkTheme') === 'true';
+
+// 将currentLang暴露到全局范围，供AI服务使用
+window.currentLang = currentLang;
 
 // 存储待创建的任务信息（用于AI分类流程）
 let pendingTodoData = null;
@@ -338,18 +325,6 @@ let tags = JSON.parse(localStorage.getItem('tags')) || ['工作', '学习', '生
 // 核心业务逻辑函数
 // ================================
 
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * 显示提示消息
  * @param {string} message - 提示消息
@@ -376,12 +351,9 @@ function showToast(message) {
     }, 100);
 }
 
-
-
 // 更新语言
 function updateLanguage() {
     document.querySelector('h1').textContent = translations[currentLang].title;
-    todoInput.placeholder = translations[currentLang].placeholder;
     addTodoBtn.textContent = translations[currentLang].addButton;
     langToggle.textContent = currentLang === 'zh' ? 'EN' : '中';
     document.querySelectorAll('.todo-column h2').forEach(h2 => {
@@ -397,6 +369,9 @@ function updateLanguage() {
     
     // 更新智能规划面板的多语言文本
     updateSmartPlanLanguage();
+    
+    // 更新输入模式的多语言支持（包括placeholder）
+    updateInputModeLanguage();
     
     renderTodos();
 }
@@ -926,10 +901,10 @@ function toggleTodo(index) {
 }
 
 // 事件监听
-addTodoBtn.addEventListener('click', addTodo);
+addTodoBtn.addEventListener('click', handleAddTodoClick);
 todoInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
-        addTodo();
+        handleAddTodoClick();
     }
 });
 
@@ -944,6 +919,7 @@ themeToggle.addEventListener('click', () => {
 langToggle.addEventListener('click', () => {
     currentLang = currentLang === 'zh' ? 'en' : 'zh';
     localStorage.setItem('lang', currentLang);
+    window.currentLang = currentLang; // 同步更新全局变量
     updateLanguage();
 });
 
@@ -982,34 +958,178 @@ document.querySelectorAll('.todo-list').forEach(list => {
     });
 });
 
-// 初始化
+// 初始化应用
 document.addEventListener('DOMContentLoaded', () => {
-    requestNotificationPermission();
-    updateTheme();
-    updateLanguage();
-    renderTagSelect();
+    // 设置事件监听器
+    setupEventDelegation();
     
-    // 如果AI启用且记住选择，默认选择智能分类
-    const aiConfig = AIConfigManager.getConfig();
-    if (aiConfig.enabled && aiConfig.rememberChoice) {
-        const tagSelect = document.getElementById('tagSelect');
-        if (tagSelect && tagSelect.querySelector('option[value="ai-classify"]')) {
-            tagSelect.value = 'ai-classify';
-        }
+    // 设置输入模式切换
+    setupInputModeToggle();
+    
+    // 设置帮助示例点击事件
+    setupHelpExamples();
+    
+    // ⭐ 关键：设置AI事件监听器
+    setupAIEventListeners();
+    
+    // 设置NLP事件监听器
+    setupNLPEventListeners();
+    
+    // 设置导出按钮事件监听器
+    const exportButton = document.getElementById('exportTodayCompleted');
+    if (exportButton) {
+        exportButton.addEventListener('click', exportDailyReport);
+        exportButton.addEventListener('contextmenu', exportDailyReport);
     }
     
+    // 渲染初始状态
     renderTodos();
-    setupEventDelegation();
-    setupAIEventListeners(); // 设置AI相关事件监听器
-    // 每分钟检查一次到期任务
-    setInterval(checkDueTasks, 60000);
+    renderTagSelect();
+    renderRecycleBin();
+    
+    // 检查通知权限
+    requestNotificationPermission();
+    
+    // 启动到期任务检查
+    checkDueTasks();
+    setInterval(checkDueTasks, 60000); // 每分钟检查一次
+    
+    // 启动回收站清理
+    cleanupRecycleBin();
+    
+    // 更新语言
+    updateLanguage();
+    
+    // 更新主题
+    updateTheme();
+    
+    // 更新优化按钮状态
+    updateOptimizeButton();
+    
+    // 更新输入模式语言
+    updateInputModeLanguage();
+    
+    // 确保默认设置为结构化模式
+    switchInputMode('structured');
+    
+    // 🚨 关键修复：延迟重新设置事件监听器，确保所有元素都已加载
+    setTimeout(() => {
+        fixAllEventListeners();
+    }, 100);
+    
+    console.log('🚀 Trae Todo应用初始化完成');
 });
 
+// ================================
+// 🚨 紧急修复：解决AI功能无法使用的问题
+// ================================
 
+/**
+ * 🚨 紧急修复函数：重新设置所有事件监听器
+ * 解决AI功能无法使用的问题
+ */
+function fixAllEventListeners() {
+    console.log('🔧 开始修复所有事件监听器...');
+    
+    // 1. 修复AI配置按钮
+    const aiConfigBtn = document.getElementById('aiConfigToggle');
+    if (aiConfigBtn) {
+        // 移除所有现有监听器
+        const newBtn = aiConfigBtn.cloneNode(true);
+        aiConfigBtn.parentNode.replaceChild(newBtn, aiConfigBtn);
+        
+        newBtn.addEventListener('click', () => {
+            console.log('AI配置按钮被点击');
+            showAIConfigModal();
+        });
+        console.log('✅ AI配置按钮事件监听器已修复');
+    } else {
+        console.error('❌ AI配置按钮未找到');
+    }
+    
+    // 2. 修复NLP弹窗按钮
+    const nlpButtons = [
+        { id: 'confirmNlpTask', handler: confirmNLPTask, name: '确认按钮' },
+        { id: 'editNlpTask', handler: editNLPTask, name: '编辑按钮' },
+        { id: 'retryNlpInput', handler: retryNLPInput, name: '重新输入按钮' }
+    ];
+    
+    nlpButtons.forEach(({ id, handler, name }) => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            newBtn.addEventListener('click', handler);
+            console.log(`✅ NLP ${name} 事件监听器已修复`);
+        } else {
+            console.error(`❌ NLP ${name} 未找到`);
+        }
+    });
+    
+    // 3. 修复优化按钮
+    const optimizeBtn = document.getElementById('optimizeBtn');
+    if (optimizeBtn) {
+        const newBtn = optimizeBtn.cloneNode(true);
+        optimizeBtn.parentNode.replaceChild(newBtn, optimizeBtn);
+        newBtn.addEventListener('click', handleOptimizeClick);
+        console.log('✅ 优化按钮事件监听器已修复');
+    }
+    
+    // 4. 修复添加任务按钮
+    const addTodoBtn = document.getElementById('addTodo');
+    if (addTodoBtn) {
+        const newBtn = addTodoBtn.cloneNode(true);
+        addTodoBtn.parentNode.replaceChild(newBtn, addTodoBtn);
+        newBtn.addEventListener('click', handleAddTodoClick);
+        console.log('✅ 添加任务按钮事件监听器已修复');
+    }
+    
+    // 5. 修复智能规划按钮
+    const smartPlanBtn = document.getElementById('smartPlanToggle');
+    if (smartPlanBtn) {
+        const newBtn = smartPlanBtn.cloneNode(true);
+        smartPlanBtn.parentNode.replaceChild(newBtn, smartPlanBtn);
+        newBtn.addEventListener('click', showSmartPlanPanel);
+        console.log('✅ 智能规划按钮事件监听器已修复');
+    }
+    
+    // 6. 修复输入模式按钮
+    const structuredBtn = document.getElementById('structuredModeBtn');
+    const naturalBtn = document.getElementById('naturalModeBtn');
+    
+    if (structuredBtn) {
+        const newBtn = structuredBtn.cloneNode(true);
+        structuredBtn.parentNode.replaceChild(newBtn, structuredBtn);
+        newBtn.addEventListener('click', () => switchInputMode('structured'));
+        console.log('✅ 结构化模式按钮事件监听器已修复');
+    }
+    
+    if (naturalBtn) {
+        const newBtn = naturalBtn.cloneNode(true);
+        naturalBtn.parentNode.replaceChild(newBtn, naturalBtn);
+        newBtn.addEventListener('click', () => switchInputMode('natural'));
+        console.log('✅ 聊天模式按钮事件监听器已修复');
+    }
+    
+    // 7. 强制重新设置输入模式为结构化
+    setTimeout(() => {
+        switchInputMode('structured');
+        console.log('🎯 输入模式已强制重置为结构化模式');
+    }, 50);
+    
+    console.log('🚀 所有事件监听器修复完成！');
+}
 
+// 🚨 紧急修复：页面加载完成后立即运行修复函数
+document.addEventListener('DOMContentLoaded', () => {
+    // 延迟500ms运行修复函数，确保所有其他初始化完成
+    setTimeout(() => {
+        fixAllEventListeners();
+    }, 500);
+});
 
-
-
+// 🚨 备用修复：如果上面的修复没有生效，用户可以手动调用
+window.fixAllEventListeners = fixAllEventListeners;
 
 // 标签系统 - 已在文件开头声明
 
@@ -1090,4 +1210,550 @@ function updateOptimizeButton() {
         optimizeBtn.style.display = 'none';
     }
 }
+
+// ================================
+// 自然语言输入功能
+// ================================
+
+/**
+ * 当前输入模式 - 'structured' 或 'natural'
+ */
+let currentInputMode = 'structured';
+
+/**
+ * 设置输入模式切换功能
+ */
+function setupInputModeToggle() {
+    const structuredBtn = document.getElementById('structuredModeBtn');
+    const naturalBtn = document.getElementById('naturalModeBtn');
+    const todoInput = document.getElementById('todoInput');
+    const inputContainer = document.querySelector('.todo-input');
+    
+    if (!structuredBtn || !naturalBtn || !todoInput) {
+        console.error('关键元素未找到，退出setupInputModeToggle');
+        return;
+    }
+    
+    // 模式切换事件监听
+    structuredBtn.addEventListener('click', () => {
+        switchInputMode('structured');
+    });
+    naturalBtn.addEventListener('click', () => {
+        switchInputMode('natural');
+    });
+    
+    // 根据AI配置初始化模式
+    const aiConfig = AIConfigManager.getConfig();
+    
+    // 总是启用聊天模式按钮，让用户能够点击
+    naturalBtn.disabled = false;
+    naturalBtn.style.opacity = '1';
+    naturalBtn.style.pointerEvents = 'auto';
+    
+    // 根据AI配置设置提示文本
+    if (aiConfig.enabled && aiConfig.features?.naturalLanguageInput) {
+        naturalBtn.title = currentLang === 'zh' ? '切换到聊天模式' : 'Switch to chat mode';
+    } else {
+        naturalBtn.title = currentLang === 'zh' ? '点击可切换到聊天模式（需要配置AI功能）' : 'Click to switch to chat mode (AI configuration required)';
+    }
+    
+    // 初始化NLP确认弹窗的语言设置
+    updateNLPModalLanguage();
+}
+
+/**
+ * 切换输入模式
+ * @param {string} mode - 输入模式 'structured' 或 'natural'
+ */
+function switchInputMode(mode) {
+    console.log('switchInputMode 被调用，模式:', mode);
+    
+    const structuredBtn = document.getElementById('structuredModeBtn');
+    const naturalBtn = document.getElementById('naturalModeBtn');
+    const todoInput = document.getElementById('todoInput');
+    const inputContainer = document.querySelector('.todo-input');
+    const optimizeBtn = document.getElementById('optimizeBtn');
+    const prioritySelect = document.getElementById('prioritySelect');
+    const tagSelect = document.getElementById('tagSelect');
+    
+    currentInputMode = mode;
+    
+    // 更新按钮状态
+    structuredBtn.classList.toggle('active', mode === 'structured');
+    naturalBtn.classList.toggle('active', mode === 'natural');
+    
+    // 更新输入容器样式
+    inputContainer.classList.toggle('natural-mode', mode === 'natural');
+    
+    // 显示/隐藏相关元素
+    if (mode === 'natural') {
+        // 聊天模式：隐藏优化按钮、优先级选择框、分类选择框
+        if (optimizeBtn) optimizeBtn.style.display = 'none';
+        if (prioritySelect) prioritySelect.style.display = 'none';
+        if (tagSelect) tagSelect.style.display = 'none';
+    } else {
+        // 结构化模式：显示所有元素
+        if (prioritySelect) prioritySelect.style.display = 'block';
+        if (tagSelect) tagSelect.style.display = 'block';
+        
+        // 优化按钮根据AI配置决定是否显示
+        if (optimizeBtn) {
+            const aiConfig = AIConfigManager.getConfig();
+            optimizeBtn.style.display = aiConfig.enabled ? 'flex' : 'none';
+        }
+    }
+    
+    // 显示/隐藏帮助提示
+    const helpArea = document.getElementById('naturalModeHelp');
+    if (helpArea) {
+        if (mode === 'natural') {
+            helpArea.style.display = 'block';
+            setupHelpExamples(); // 设置示例点击事件
+        } else {
+            helpArea.style.display = 'none';
+        }
+    }
+    
+    // 更新输入框提示文本和样式
+    if (mode === 'natural') {
+        todoInput.placeholder = currentLang === 'zh' ? 
+            '🤖 用自然语言描述任务，如：明天下午3点提醒我开会、本周五前完成项目报告...' : 
+            '🤖 Describe tasks naturally: remind me to meeting at 3pm tomorrow, finish project report by Friday...';
+        
+        // 更新添加按钮文字
+        const addButton = document.getElementById('addTodo');
+        if (addButton) {
+            addButton.textContent = currentLang === 'zh' ? '🤖 AI解析' : '🤖 AI Parse';
+        }
+    } else {
+        todoInput.placeholder = currentLang === 'zh' ? 
+            '请输入待办事项...' : 
+            'Enter todo item...';
+        
+        // 恢复添加按钮文字
+        const addButton = document.getElementById('addTodo');
+        if (addButton) {
+            addButton.textContent = currentLang === 'zh' ? '添加' : 'Add';
+        }
+    }
+    
+    // 清空输入框
+    todoInput.value = '';
+    todoInput.focus();
+    
+    // 显示提示
+    const message = mode === 'natural' ? 
+        (currentLang === 'zh' ? '💬 已切换到聊天模式，可以用自然语言描述任务' : '💬 Switched to chat mode, describe tasks naturally') :
+        (currentLang === 'zh' ? '📝 已切换到结构化模式' : '📝 Switched to structured mode');
+    
+    showToast(message);
+}
+
+/**
+ * 处理添加任务按钮点击
+ * 根据当前模式选择不同的处理方式
+ */
+function handleAddTodoClick() {
+    const todoInput = document.getElementById('todoInput');
+    const inputText = todoInput.value.trim();
+    
+    if (!inputText) {
+        showToast(currentLang === 'zh' ? '请输入任务内容' : 'Please enter task content');
+        return;
+    }
+    
+    if (currentInputMode === 'natural') {
+        // 自然语言模式：先检查AI配置，然后调用AI解析
+        const aiConfig = AIConfigManager.getConfig();
+        
+        if (!aiConfig.enabled) {
+            showToast(currentLang === 'zh' ? 
+                '❌ AI功能未启用，请在设置中启用AI功能' : 
+                '❌ AI feature not enabled, please enable AI in settings');
+            return;
+        }
+        
+        if (!aiConfig.apiConfig?.apiKey) {
+            showToast(currentLang === 'zh' ? 
+                '❌ 请先配置AI API密钥' : 
+                '❌ Please configure AI API key first');
+            return;
+        }
+        
+        handleNaturalLanguageInput(inputText);
+    } else {
+        // 结构化模式：使用原有的addTodo函数
+        addTodo();
+    }
+}
+
+/**
+ * 更新输入模式的多语言支持
+ */
+function updateInputModeLanguage() {
+    const structuredBtn = document.getElementById('structuredModeBtn');
+    const naturalBtn = document.getElementById('naturalModeBtn');
+    const todoInput = document.getElementById('todoInput');
+    
+    if (structuredBtn) {
+        const textElement = structuredBtn.querySelector('[data-i18n="inputMode.structured"]');
+        if (textElement) {
+            textElement.textContent = currentLang === 'zh' ? '结构化' : 'Structured';
+        }
+    }
+    
+    if (naturalBtn) {
+        const textElement = naturalBtn.querySelector('[data-i18n="inputMode.natural"]');
+        if (textElement) {
+            textElement.textContent = currentLang === 'zh' ? '聊天模式' : 'Chat Mode';
+        }
+    }
+    
+    // 更新输入框提示文本和按钮文字
+    if (todoInput) {
+        const addButton = document.getElementById('addTodo');
+        
+        if (currentInputMode === 'natural') {
+            todoInput.placeholder = currentLang === 'zh' ? 
+                '🤖 用自然语言描述任务，如：明天下午3点提醒我开会、本周五前完成项目报告...' : 
+                '🤖 Describe tasks naturally: remind me to meeting at 3pm tomorrow, finish project report by Friday...';
+            
+            if (addButton) {
+                addButton.textContent = currentLang === 'zh' ? '🤖 AI解析' : '🤖 AI Parse';
+            }
+        } else {
+            todoInput.placeholder = currentLang === 'zh' ? 
+                '请输入待办事项...' : 
+                'Enter todo item...';
+            
+            if (addButton) {
+                addButton.textContent = currentLang === 'zh' ? '添加' : 'Add';
+            }
+        }
+    }
+    
+    // 更新帮助示例的语言
+    updateHelpExamples();
+    
+    // 更新NLP确认弹窗的语言
+    updateNLPModalLanguage();
+}
+
+/**
+ * 更新NLP确认弹窗的多语言支持
+ */
+function updateNLPModalLanguage() {
+    const translations = {
+        zh: {
+            title: '🤖 AI理解了您的意思',
+            originalInput: '您的输入：',
+            parsedResult: 'AI解析结果：',
+            taskContent: '任务内容：',
+            priority: '优先级：',
+            category: '分类：',
+            dueDate: '截止时间：',
+            confirm: '确认添加',
+            modify: '修改',
+            retry: '重新输入'
+        },
+        en: {
+            title: '🤖 AI understood your input',
+            originalInput: 'Your input:',
+            parsedResult: 'AI parsed result:',
+            taskContent: 'Task content:',
+            priority: 'Priority:',
+            category: 'Category:',
+            dueDate: 'Due date:',
+            confirm: 'Confirm',
+            modify: 'Modify',
+            retry: 'Re-enter'
+        }
+    };
+    
+    const lang = translations[currentLang];
+    
+    // 更新弹窗标题
+    const titleElement = document.querySelector('#nlpConfirmModal h3');
+    if (titleElement) {
+        titleElement.textContent = lang.title;
+    }
+    
+    // 更新各个标签文本
+    const labels = [
+        { selector: '#nlpConfirmModal .nlp-original-input h4', text: lang.originalInput },
+        { selector: '#nlpConfirmModal .nlp-parsed-result h4', text: lang.parsedResult },
+        { selector: '#nlpConfirmModal .nlp-field label[data-i18n="nlp.taskContent"]', text: lang.taskContent },
+        { selector: '#nlpConfirmModal .nlp-field label[data-i18n="nlp.priority"]', text: lang.priority },
+        { selector: '#nlpConfirmModal .nlp-field label[data-i18n="nlp.category"]', text: lang.category },
+        { selector: '#nlpConfirmModal .nlp-field label[data-i18n="nlp.dueDate"]', text: lang.dueDate }
+    ];
+    
+    labels.forEach(({ selector, text }) => {
+        const element = document.querySelector(selector);
+        if (element) element.textContent = text;
+    });
+    
+    // 更新按钮文本
+    const confirmBtn = document.querySelector('#confirmNlpTask span[data-i18n="nlp.confirm"]');
+    if (confirmBtn) confirmBtn.textContent = lang.confirm;
+    
+    const editBtn = document.querySelector('#editNlpTask span[data-i18n="nlp.modify"]');
+    if (editBtn) editBtn.textContent = lang.modify;
+    
+    const retryBtn = document.querySelector('#retryNlpInput span[data-i18n="nlp.retry"]');
+    if (retryBtn) retryBtn.textContent = lang.retry;
+    
+    // 更新分类选项
+    const categorySelect = document.getElementById('nlpCategory');
+    if (categorySelect) {
+        // 清空现有选项
+        categorySelect.innerHTML = '';
+        
+        // 根据当前语言设置分类选项
+        const categories = currentLang === 'zh' ? 
+            ['工作', '学习', '生活', '其他'] : 
+            ['Work', 'Study', 'Life', 'Other'];
+        
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            categorySelect.appendChild(option);
+        });
+    }
+    
+    // 更新优先级选项
+    const prioritySelect = document.getElementById('nlpPriority');
+    if (prioritySelect) {
+        const options = prioritySelect.querySelectorAll('option');
+        const priorities = currentLang === 'zh' ? 
+            ['低优先级', '中优先级', '高优先级'] : 
+            ['Low Priority', 'Medium Priority', 'High Priority'];
+        
+        options.forEach((option, index) => {
+            if (index < priorities.length) {
+                option.textContent = priorities[index];
+            }
+        });
+    }
+}
+
+/**
+ * 设置帮助示例的点击事件
+ */
+function setupHelpExamples() {
+    const examples = document.querySelectorAll('.help-example');
+    examples.forEach(example => {
+        example.addEventListener('click', () => {
+            const todoInput = document.getElementById('todoInput');
+            if (todoInput) {
+                todoInput.value = example.textContent.replace(/^"(.*)"$/, '$1'); // 移除引号
+                todoInput.focus();
+            }
+        });
+    });
+}
+
+/**
+ * 更新帮助示例的多语言支持
+ */
+function updateHelpExamples() {
+    const helpArea = document.getElementById('naturalModeHelp');
+    if (!helpArea) return;
+    
+    const title = helpArea.querySelector('h4');
+    const examples = helpArea.querySelector('.help-examples');
+    
+    if (title) {
+        title.textContent = currentLang === 'zh' ? 
+            '💡 自然语言输入示例：' : 
+            '💡 Natural Language Examples:';
+    }
+    
+    if (examples) {
+        const exampleTexts = currentLang === 'zh' ? [
+            '"明天下午3点提醒我开会"',
+            '"本周五前完成项目报告"', 
+            '"买菜做饭，大概1小时"',
+            '"重要：下周一交作业"'
+        ] : [
+            '"remind me to meeting at 3pm tomorrow"',
+            '"finish project report by Friday"',
+            '"shopping and cooking, about 1 hour"', 
+            '"important: submit homework next Monday"'
+        ];
+        
+        examples.innerHTML = '';
+        exampleTexts.forEach(text => {
+            const span = document.createElement('span');
+            span.className = 'help-example';
+            span.textContent = text;
+            examples.appendChild(span);
+        });
+        
+        // 重新设置点击事件
+        setupHelpExamples();
+    }
+}
+
+// ================================
+// 🚨 紧急修复：解决输入模式显示不一致问题
+// ================================
+
+/**
+ * 🚨 强制修复输入模式显示不一致问题
+ */
+function forceFixInputMode() {
+    console.log('🔧 开始强制修复输入模式...');
+    
+    // 1. 强制重置输入模式为结构化
+    currentInputMode = 'structured';
+    
+    // 2. 强制更新按钮状态
+    const structuredBtn = document.getElementById('structuredModeBtn');
+    const naturalBtn = document.getElementById('naturalModeBtn');
+    
+    if (structuredBtn && naturalBtn) {
+        structuredBtn.classList.add('active');
+        naturalBtn.classList.remove('active');
+        console.log('✅ 按钮状态已更新');
+    }
+    
+    // 3. 强制更新输入容器样式
+    const inputContainer = document.querySelector('.todo-input');
+    if (inputContainer) {
+        inputContainer.classList.remove('natural-mode');
+        console.log('✅ 输入容器样式已更新');
+    }
+    
+    // 4. 强制更新输入框和按钮文本
+    const todoInput = document.getElementById('todoInput');
+    const addButton = document.getElementById('addTodo');
+    
+    if (todoInput) {
+        todoInput.placeholder = currentLang === 'zh' ? 
+            '请输入待办事项...' : 
+            'Enter todo item...';
+        console.log('✅ 输入框提示文本已更新');
+    }
+    
+    if (addButton) {
+        addButton.textContent = currentLang === 'zh' ? '添加' : 'Add';
+        console.log('✅ 添加按钮文本已更新');
+    }
+    
+    // 5. 强制显示/隐藏相关元素
+    const optimizeBtn = document.getElementById('optimizeBtn');
+    const prioritySelect = document.getElementById('prioritySelect');
+    const tagSelect = document.getElementById('tagSelect');
+    const helpArea = document.getElementById('naturalModeHelp');
+    
+    if (optimizeBtn) {
+        const aiConfig = AIConfigManager.getConfig();
+        optimizeBtn.style.display = aiConfig.enabled ? 'flex' : 'none';
+        console.log('✅ 优化按钮显示状态已更新');
+    }
+    
+    if (prioritySelect) {
+        prioritySelect.style.display = 'block';
+        console.log('✅ 优先级选择框已显示');
+    }
+    
+    if (tagSelect) {
+        tagSelect.style.display = 'block';
+        console.log('✅ 分类选择框已显示');
+    }
+    
+    if (helpArea) {
+        helpArea.style.display = 'none';
+        console.log('✅ 帮助区域已隐藏');
+    }
+    
+    console.log('🚀 输入模式强制修复完成！');
+}
+
+/**
+ * 🚨 强制修复添加任务按钮事件监听器
+ */
+function forceFixAddTodoButton() {
+    console.log('🔧 开始强制修复添加任务按钮...');
+    
+    const addTodoBtn = document.getElementById('addTodo');
+    if (addTodoBtn) {
+        // 完全清除现有事件监听器
+        const newBtn = addTodoBtn.cloneNode(true);
+        addTodoBtn.parentNode.replaceChild(newBtn, addTodoBtn);
+        
+        newBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('➕ 添加任务按钮被点击');
+            handleAddTodoClick();
+        });
+        
+        // 强制设置按钮样式
+        newBtn.style.pointerEvents = 'auto';
+        newBtn.style.cursor = 'pointer';
+        
+        console.log('✅ 添加任务按钮已强制修复');
+    } else {
+        console.error('❌ 添加任务按钮未找到');
+    }
+}
+
+/**
+ * 🚨 强制修复输入模式切换按钮
+ */
+function forceFixInputModeButtons() {
+    console.log('🔧 开始强制修复输入模式按钮...');
+    
+    const structuredBtn = document.getElementById('structuredModeBtn');
+    const naturalBtn = document.getElementById('naturalModeBtn');
+    
+    if (structuredBtn) {
+        const newBtn = structuredBtn.cloneNode(true);
+        structuredBtn.parentNode.replaceChild(newBtn, structuredBtn);
+        
+        newBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('📝 结构化模式按钮被点击');
+            switchInputMode('structured');
+        });
+        
+        newBtn.style.pointerEvents = 'auto';
+        newBtn.style.cursor = 'pointer';
+        
+        console.log('✅ 结构化模式按钮已强制修复');
+    }
+    
+    if (naturalBtn) {
+        const newBtn = naturalBtn.cloneNode(true);
+        naturalBtn.parentNode.replaceChild(newBtn, naturalBtn);
+        
+        newBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('💬 聊天模式按钮被点击');
+            switchInputMode('natural');
+        });
+        
+        newBtn.style.pointerEvents = 'auto';
+        newBtn.style.cursor = 'pointer';
+        
+        console.log('✅ 聊天模式按钮已强制修复');
+    }
+}
+
+// 🚨 页面加载后立即运行所有修复
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        forceFixInputMode();
+        forceFixAddTodoButton();
+        forceFixInputModeButtons();
+        console.log('🚀 所有输入模式修复完成！');
+    }, 600);
+});
+
+// 🚨 暴露到全局作用域，供调试使用
+window.forceFixInputMode = forceFixInputMode;
+window.forceFixAddTodoButton = forceFixAddTodoButton;
+window.forceFixInputModeButtons = forceFixInputModeButtons;
 
