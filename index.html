@@ -75,11 +75,55 @@
             </div>
         </div>
         
+        <!-- 任务描述优化弹窗 -->
+        <div id="optimizeModal" class="optimize-modal" style="display: none;">
+            <div class="optimize-content">
+                <h3>✨ 任务描述优化</h3>
+                
+                <div class="optimize-comparison">
+                    <div class="optimize-section">
+                        <h4>📝 原始描述</h4>
+                        <div class="optimize-text original-text" id="originalText"></div>
+                    </div>
+                    
+                    <div class="optimize-section">
+                        <h4>🤖 AI优化建议</h4>
+                        <div class="optimize-text optimized-text" id="optimizedText"></div>
+                        <div class="optimize-loading" id="optimizeLoading" style="display: none;">
+                            <div class="loading-spinner"></div>
+                            <span>AI正在优化中...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 可编辑区域 -->
+                <div class="optimize-edit-section" id="editSection" style="display: none;">
+                    <h4>✏️ 手动编辑</h4>
+                    <textarea id="editTextarea" class="edit-textarea" placeholder="请输入您的修改..."></textarea>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div class="optimize-actions">
+                    <button id="acceptOptimize" class="accept-btn">✓ 采用建议</button>
+                    <button id="editOptimize" class="edit-btn">✏️ 手动编辑</button>
+                    <button id="ignoreOptimize" class="ignore-btn">× 忽略建议</button>
+                    <button id="confirmEdit" class="confirm-edit-btn" style="display: none;">✓ 确认编辑</button>
+                    <button id="cancelEdit" class="cancel-edit-btn" style="display: none;">✗ 取消编辑</button>
+                </div>
+            </div>
+        </div>
+        
         <h1>待办事项清单</h1>
         
         <!-- 主要输入区域 -->
         <div class="todo-input">
-            <input type="text" id="todoInput" placeholder="请输入待办事项...">
+            <div class="input-with-optimize">
+                <input type="text" id="todoInput" placeholder="请输入待办事项...">
+                <button id="optimizeBtn" class="optimize-btn" title="AI优化任务描述">
+                    <span class="optimize-icon">✨</span>
+                    <span class="optimize-text">优化</span>
+                </button>
+            </div>
             <select id="prioritySelect" class="priority-select">
                 <option value="low">低优先级</option>
                 <option value="medium">中优先级</option>
@@ -144,7 +188,8 @@
         </div>
     </div>
     
-    <!-- 主要JavaScript逻辑 -->
+    <!-- JavaScript模块 -->
+    <script src="ai-service.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
