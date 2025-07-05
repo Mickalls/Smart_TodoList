@@ -86,6 +86,26 @@ const translations = {
             button: '优化',
             processing: '处理中',
             title: 'AI优化任务描述'
+        },
+        smartPlan: {
+            button: '智能规划',
+            title: '智能时间规划',
+            generating: 'AI规划中...',
+            regenerate: '重新规划',
+            stats: {
+                todayTasks: '今日任务',
+                scheduled: '已规划', 
+                estimatedTime: '预计时长'
+            },
+            timeSlots: {
+                morning: '上午',
+                afternoon: '下午',
+                evening: '晚上'
+            },
+            unscheduled: '未规划任务',
+            confirm: '确认安排',
+            remove: '移除',
+            scheduled: '已规划时间'
         }
     },
     en: {
@@ -121,6 +141,26 @@ const translations = {
             button: 'Optimize',
             processing: 'Processing',
             title: 'AI Optimize Task Description'
+        },
+        smartPlan: {
+            button: 'Smart Plan',
+            title: 'Smart Time Planning',
+            generating: 'AI Planning...',
+            regenerate: 'Regenerate',
+            stats: {
+                todayTasks: 'Today Tasks',
+                scheduled: 'Scheduled',
+                estimatedTime: 'Est. Time'
+            },
+            timeSlots: {
+                morning: 'Morning',
+                afternoon: 'Afternoon',
+                evening: 'Evening'
+            },
+            unscheduled: 'Unscheduled Tasks',
+            confirm: 'Confirm',
+            remove: 'Remove',
+            scheduled: 'Scheduled'
         }
     }
 };
@@ -355,7 +395,68 @@ function updateLanguage() {
     // 更新优化按钮文字
     updateOptimizeButton();
     
+    // 更新智能规划面板的多语言文本
+    updateSmartPlanLanguage();
+    
     renderTodos();
+}
+
+/**
+ * 更新智能规划面板的多语言文本
+ * 根据当前语言设置更新面板中的所有文本
+ */
+function updateSmartPlanLanguage() {
+    // 更新智能规划按钮文本
+    const smartPlanToggle = document.getElementById('smartPlanToggle');
+    if (smartPlanToggle) {
+        smartPlanToggle.textContent = `🧠 ${translations[currentLang].smartPlan.button}`;
+        smartPlanToggle.title = translations[currentLang].smartPlan.title;
+    }
+    
+    // 更新面板标题
+    const panelTitle = document.querySelector('.smart-plan-header h3');
+    if (panelTitle) {
+        panelTitle.textContent = `🧠 ${translations[currentLang].smartPlan.title}`;
+    }
+    
+    // 更新所有包含data-i18n属性的元素
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        const keys = key.split('.');
+        let value = translations[currentLang];
+        
+        // 遍历嵌套的键
+        for (const k of keys) {
+            if (value && value[k]) {
+                value = value[k];
+            } else {
+                value = null;
+                break;
+            }
+        }
+        
+        if (value) {
+            // 特殊处理时间段标题，保留图标和时间范围
+            if (key.includes('timeSlots')) {
+                const icons = {
+                    'morning': '🌅',
+                    'afternoon': '☀️',
+                    'evening': '🌙'
+                };
+                const timeRanges = {
+                    'morning': '(9:00-12:00)',
+                    'afternoon': '(14:00-18:00)', 
+                    'evening': '(19:00-22:00)'
+                };
+                const period = key.split('.').pop();
+                element.textContent = `${icons[period]} ${value} ${timeRanges[period]}`;
+            } else if (key.includes('unscheduled')) {
+                element.textContent = `📋 ${value}`;
+            } else {
+                element.textContent = value;
+            }
+        }
+    });
 }
 
 // 更新主题
@@ -427,6 +528,15 @@ function renderTodos() {
         tagSpan.className = 'todo-tag';
         tagSpan.textContent = todo.tag || translations[currentLang].defaultTag;
         
+        // 检查任务是否已规划，如果是则添加⏰图标
+        let scheduledIcon = null;
+        if (todo.aiEnhanced && todo.aiEnhanced.isScheduled) {
+            scheduledIcon = document.createElement('span');
+            scheduledIcon.className = 'todo-scheduled-icon';
+            scheduledIcon.textContent = '⏰';
+            scheduledIcon.title = currentLang === 'zh' ? '已规划时间' : 'Scheduled';
+        }
+        
         li.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             showTodoMenu(e, index);
@@ -435,6 +545,11 @@ function renderTodos() {
         li.appendChild(checkbox);
         li.appendChild(span);
         li.appendChild(tagSpan);
+        
+        // 如果有规划图标，添加到任务项中
+        if (scheduledIcon) {
+            li.appendChild(scheduledIcon);
+        }
         
         // 修改任务分类逻辑：区分今日已完成任务和其他已完成任务
         const todoType = classifyTodo(todo);
@@ -762,8 +877,8 @@ async function addTodo() {
                 selectedTag = currentLang === 'zh' ? '其他' : 'Other';
                 console.log('AI分类失败，使用默认分类');
             }
-         } catch (error) {
-             console.error('AI分类出错:', error);
+        } catch (error) {
+            console.error('AI分类出错:', error);
              selectedTag = currentLang === 'zh' ? '其他' : 'Other';
             
             // 恢复按钮状态

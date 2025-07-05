@@ -22,6 +22,8 @@
     --tag-text: #666;
     --stats-bg: var(--card-bg);
     --input-bg: var(--card-bg);
+    --hover-bg: #f0f0f0;
+    --text-secondary: #666;
 }
 
 body.dark-theme {
@@ -39,6 +41,8 @@ body.dark-theme {
     --tag-text: #f5f5f5;
     --stats-bg: var(--card-bg);
     --input-bg: var(--card-bg);
+    --hover-bg: #404040;
+    --text-secondary: #aaaaaa;
 }
 
 body {
@@ -1051,5 +1055,420 @@ h1 {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* ============================= */
+/* 智能规划面板样式 */
+/* ============================= */
+
+.smart-plan-toggle {
+    background: linear-gradient(135deg, #9c27b0, #e91e63);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.smart-plan-toggle:hover {
+    background: linear-gradient(135deg, #7b1fa2, #c2185b);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(156, 39, 176, 0.3);
+}
+
+.smart-plan-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 300px;
+    height: 100vh;
+    background: var(--card-bg);
+    border-left: 1px solid var(--border-color);
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.smart-plan-panel.open {
+    transform: translateX(0);
+}
+
+.smart-plan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-color);
+}
+
+.smart-plan-header h3 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 16px;
+}
+
+.close-plan-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-color);
+    padding: 5px;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+}
+
+.close-plan-btn:hover {
+    background: var(--hover-bg);
+}
+
+.smart-plan-content {
+    padding: 20px;
+}
+
+/* 统计信息样式 */
+.plan-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* 规划操作按钮样式 */
+.plan-actions {
+    margin-bottom: 20px;
+}
+
+.generate-plan-btn, .refresh-plan-btn {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.generate-plan-btn {
+    background: linear-gradient(135deg, #4caf50, #2196f3);
+    color: white;
+}
+
+.generate-plan-btn:hover {
+    background: linear-gradient(135deg, #45a049, #1976d2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.refresh-plan-btn {
+    background: linear-gradient(135deg, #ff9800, #f44336);
+    color: white;
+}
+
+.refresh-plan-btn:hover {
+    background: linear-gradient(135deg, #f57c00, #d32f2f);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+}
+
+.generate-plan-btn:disabled, .refresh-plan-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 时间段样式 */
+.time-slots {
+    margin-bottom: 20px;
+}
+
+.time-slot {
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.time-slot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.time-slot-header h4 {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.time-slot-duration {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--bg-color);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.time-slot-tasks {
+    min-height: 60px;
+    padding: 10px;
+    background: var(--bg-color);
+    border-radius: 0 0 8px 8px;
+}
+
+.time-slot-tasks.drag-over {
+    background: rgba(33, 150, 243, 0.1);
+    border: 2px dashed var(--primary-color);
+}
+
+/* 任务卡片样式 */
+.plan-task-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    cursor: move;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.plan-task-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.plan-task-card.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+}
+
+.plan-task-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.plan-task-name {
+    font-size: 13px;
+    color: var(--text-color);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.plan-task-priority {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+}
+
+.plan-task-priority.high {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.plan-task-priority.medium {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.plan-task-priority.low {
+    background: #e8f5e8;
+    color: #388e3c;
+}
+
+.plan-task-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.plan-task-duration {
+    background: var(--bg-color);
+    padding: 2px 6px;
+    border-radius: 8px;
+}
+
+.plan-task-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.plan-task-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: background 0.3s ease;
+}
+
+.plan-task-btn.confirm {
+    color: #4caf50;
+}
+
+.plan-task-btn.confirm:hover {
+    background: #e8f5e8;
+}
+
+.plan-task-btn.remove {
+    color: #f44336;
+}
+
+.plan-task-btn.remove:hover {
+    background: #ffebee;
+}
+
+/* 已确认任务样式 */
+.plan-task-card.confirmed {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-color: #4caf50;
+    cursor: default;
+}
+
+.plan-task-card.confirmed:hover {
+    border-color: #4caf50;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+}
+
+.plan-task-confirmed {
+    font-size: 11px;
+    color: #4caf50;
+    background: #e8f5e8;
+    padding: 2px 6px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-weight: 500;
+}
+
+/* 未规划任务样式 */
+.unscheduled-tasks {
+    margin-top: 20px;
+}
+
+.unscheduled-tasks h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.unscheduled-task-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.unscheduled-task-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    cursor: move;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.unscheduled-task-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.unscheduled-task-name {
+    font-size: 12px;
+    color: var(--text-color);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.unscheduled-task-priority {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+}
+
+/* 任务列表中的规划图标 */
+.todo-scheduled-icon {
+    color: #ff9800;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+/* 智能规划面板移动端适配 */
+@media (max-width: 768px) {
+    .smart-plan-panel {
+        width: 100%;
+        transform: translateX(100%);
+    }
+    
+    .smart-plan-panel.open {
+        transform: translateX(0);
+    }
+    
+    .smart-plan-content {
+        padding: 15px;
+    }
+    
+    .plan-stats {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .stat-item {
+        flex-direction: row;
+        justify-content: space-between;
     }
 }

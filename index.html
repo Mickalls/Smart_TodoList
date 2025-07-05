@@ -8,12 +8,14 @@
 </head>
 <body>
     <div class="container">
-        <!-- 顶部设置栏：主题切换、语言切换、AI配置 -->
+        <!-- 顶部设置栏：主题切换、语言切换、AI配置、智能规划 -->
         <div class="settings">
             <button id="themeToggle" class="theme-toggle">🌞</button>
             <button id="langToggle" class="lang-toggle">EN</button>
             <!-- AI配置入口按钮 -->
             <button id="aiConfigToggle" class="ai-config-toggle">🤖</button>
+            <!-- 智能规划入口按钮 -->
+            <button id="smartPlanToggle" class="smart-plan-toggle">🧠 智能规划</button>
         </div>
         
         <!-- AI配置弹窗 - 用户可以配置AI提供商、API密钥等 -->
@@ -185,6 +187,88 @@
             <h2>回收站</h2>
             <ul id="recycleBinList" class="todo-list"></ul>
             <button id="emptyRecycleBin" class="empty-recycle-bin">清空回收站</button>
+        </div>
+        
+        <!-- 智能规划面板 -->
+        <div id="smartPlanPanel" class="smart-plan-panel">
+            <div class="smart-plan-header">
+                <h3>🧠 智能时间规划</h3>
+                <button id="closePlanPanel" class="close-plan-btn">×</button>
+            </div>
+            
+            <div class="smart-plan-content">
+                <!-- 规划统计信息 -->
+                <div class="plan-stats">
+                    <div class="stat-item">
+                        <span class="stat-label" data-i18n="smartPlan.stats.todayTasks">今日任务</span>
+                        <span class="stat-value" id="todayTaskCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label" data-i18n="smartPlan.stats.scheduled">已规划</span>
+                        <span class="stat-value" id="scheduledTaskCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label" data-i18n="smartPlan.stats.estimatedTime">预计时长</span>
+                        <span class="stat-value" id="totalEstimatedTime">0h</span>
+                    </div>
+                </div>
+                
+                <!-- 生成规划按钮 -->
+                <div class="plan-actions">
+                    <button id="generatePlanBtn" class="generate-plan-btn">
+                        <span class="btn-icon">🤖</span>
+                        <span class="btn-text" data-i18n="smartPlan.button">生成智能规划</span>
+                    </button>
+                    <button id="refreshPlanBtn" class="refresh-plan-btn" style="display: none;">
+                        <span class="btn-icon">🔄</span>
+                        <span class="btn-text" data-i18n="smartPlan.regenerate">重新规划</span>
+                    </button>
+                </div>
+                
+                <!-- 时间段规划 -->
+                <div class="time-slots">
+                    <!-- 上午时段 -->
+                    <div class="time-slot" data-period="morning">
+                        <div class="time-slot-header">
+                            <h4 data-i18n="smartPlan.timeSlots.morning">🌅 上午 (9:00-12:00)</h4>
+                            <span class="time-slot-duration">3小时</span>
+                        </div>
+                        <div class="time-slot-tasks" id="morningTasks" data-period="morning">
+                            <!-- 任务卡片将动态插入这里 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 下午时段 -->
+                    <div class="time-slot" data-period="afternoon">
+                        <div class="time-slot-header">
+                            <h4 data-i18n="smartPlan.timeSlots.afternoon">☀️ 下午 (14:00-18:00)</h4>
+                            <span class="time-slot-duration">4小时</span>
+                        </div>
+                        <div class="time-slot-tasks" id="afternoonTasks" data-period="afternoon">
+                            <!-- 任务卡片将动态插入这里 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 晚上时段 -->
+                    <div class="time-slot" data-period="evening">
+                        <div class="time-slot-header">
+                            <h4 data-i18n="smartPlan.timeSlots.evening">🌙 晚上 (19:00-22:00)</h4>
+                            <span class="time-slot-duration">3小时</span>
+                        </div>
+                        <div class="time-slot-tasks" id="eveningTasks" data-period="evening">
+                            <!-- 任务卡片将动态插入这里 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 未规划任务 -->
+                <div class="unscheduled-tasks">
+                    <h4 data-i18n="smartPlan.unscheduled">📋 未规划任务</h4>
+                    <div class="unscheduled-task-list" id="unscheduledTasks">
+                        <!-- 未规划的任务将显示在这里 -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
